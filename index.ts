@@ -1,184 +1,141 @@
-
 let g_amountOfCases: number;
-let a: any[];
-let str: string;
+let format: boolean;
 
-function makeArray(allData: string): void
+/* make one 3D array of all the puzzles */
+function makeArray(allData: string): any
 {
 	g_amountOfCases = Number(allData.split('\n')[0]);
-	a = new Array(g_amountOfCases);
-	let it = 0;
-	while (it < g_amountOfCases)
-	{
-		allData = allData.substring(allData.indexOf("\n") +1);
-		let i_and_j = allData.split('\n')[0];
-		let i = Number(i_and_j.split(' ')[0]);
-		let j = Number(i_and_j.split(' ')[1]);
-		allData = allData.substring(allData.indexOf("\n") +1);
 
-		a[it] = new Array(i);
-		for (let x = 0; x < i; x++)
-		{
-			a[it][x] = new Array(j);
-			let line = allData.split('\n')[0];
-			for (let y = 0; y < j; y++)
-			{
-				a[it][x][y] = Number(line[y]);
-			}
-			allData = allData.substring(allData.indexOf("\n") +1);
-		}
-		//allData = allData.substring(allData.indexOf("\n") +1);
-		it++;
+	let a: any[];
+	a = allData.split("\n\n");
+
+	for (let i = 0; i < g_amountOfCases; i++)
+	{
+		a[i] = a[i].split("\n");
 	}
+
+	/* the last puzzle has an empty line at its last index, so we have to pop that on off */
+	a[g_amountOfCases - 1].pop();
+
+	/* remove first line */
+	a[0].shift();
+
+	/* split the lines into an array and map them as Number types */
+	for (let i = 0; i < g_amountOfCases; i++)
+	{
+		/* remove n m, we will use a.length and a[0].length respectively */
+		a[i].shift();
+		for (let j = 0; j < a[i].length; j++)
+		{
+			a[i][j] = a[i][j].split('');
+			a[i][j] = a[i][j].map(Number);
+		}
+	}
+	return a;
 }
 
 function readStdinFs()
 {
 	let fs = require("fs");
-	str = fs.readFileSync(0).toString();
+	return(fs.readFileSync(0).toString());
 }
 
-function findNearestWhite(j, i, array): any
+function solvePuzzle(sol, level, solvedCells)
 {
-
-	return [1,2];
-
-}
-
-function distAllPoints(y, x, array): number
-{
-	let smallest = 999; // there is always at least one 'white' pixel and
-	let dist;
-
-	let amountWhites = array.reduce(function(a, b) { return a+b; }, 0);
-	//console.log(amountWhites);
-	for (let j = 0; j < array.length; j++)
+	for (let j = 0; j < sol.length; j++)
 	{
-		for (let i = 0; i < array[0].length; i++)
+		for (let i = 0; i < sol[0].length; i++)
 		{
-			if (array[j][i] == 1)
+			if (sol[j][i] == level)
 			{
-				dist = Math.abs(y - j) + Math.abs(x - i);
-				if (dist < smallest)
-					smallest = dist;
+				/* look up */
+				if (j > 0 && sol[j - 1][i] == 0)
+				{
+					sol[j - 1][i] = level + 1;
+					solvedCells++;
+				}
+
+				/* look down */
+				if (j < (sol.length - 1) && sol[j + 1][i] == 0)
+				{
+					sol[j + 1][i] = level + 1;
+					solvedCells++;
+				}
+
+				/* look left */
+				if (i > 0 && sol[j][i - 1] == 0) // look left
+				{
+					sol[j][i - 1] = level + 1;
+					solvedCells++;
+				}
+
+				/* look right */
+				if (i < (sol[0].length - 1) && sol[j][i + 1] == 0) // look right
+				{
+					sol[j][i + 1] = level + 1;
+					solvedCells++;
+				}
 			}
 		}
 	}
-	return smallest;
-}
 
-function solvePuzzle(array)
-{
-	// copy array
-	let sol = [];
-	for (let z = 0; z < array.length; z++)
+	/* if the solvedCells is equal to the total number of cells, we are close to solving the puzzle */
+	if (solvedCells < (sol.length * sol[0].length))
 	{
-		sol[z] = array[z].slice();
+		solvePuzzle(sol, level + 1, solvedCells);
+		return;
 	}
 
+	/* last step is to subtract 1 for all cells */
+	for (let j = 0; j < sol.length; j++)
+	 	for (let i = 0; i < sol[0].length; i++)
+	 		sol[j][i] -= 1;
+
+	/* we can print the solution */
+	printArray(sol);
+}
+
+function printArray(array)
+{
 	for (let j = 0; j < array.length; j++)
 	{
 		for (let i = 0; i < array[0].length; i++)
 		{
-			if (array[j][i] == 0)
+			if (format)
 			{
-				//let pos = findNearestWhite(j, i, array);
-				sol[j][i] = distAllPoints(j, i, array);
+				if (array[j][i].toString().length > 1)
+					process.stdout.write(' ');
+				else
+					process.stdout.write('  ');
 			}
-			else
-				sol[j][i] = 0;
-		}
-	}
-	printSolution(sol);
-}
-
-function printSolution(array)
-{
-	//console.log(array.length);
-	//console.log(array[0].length);
-	for (let j = 0; j < array.length; j++)
-	{
-		for (let i = 0; i < array[0].length; i++)
-		{
 			process.stdout.write(array[j][i].toString());
-			process.stdout.write(' ');
 		}
 		process.stdout.write('\n');
 	}
 }
 
+function amountOfWhites(array)
+{
+	let res = 0;
+	for (let j = 0; j < array.length; j++)
+		for (let i = 0; i < array[0].length; i++)
+			if (array[j][i] == 1)
+				res++;
+
+	return res;
+}
 
 function main() {
-	//readStdin(printStr());
-	readStdinFs();
-	makeArray(str);
+	format = Boolean(process.argv[2]);
+	let str = readStdinFs();
+	let a = makeArray(str);
 
-	console.log(str);
-
-	// for (let i = 0; i < g_amountOfCases; i++)
-	// {
-	// 	solvePuzzle(a[i]);
-	// 	//printSolution(a[i]);
-	// 	process.stdout.write('\n');
-	// }
-	// process.stdout.write('\n');
-
+	for (let i = 0; i < g_amountOfCases; i++)
+	{
+		solvePuzzle(a[i], 1, amountOfWhites(a[i]));
+		process.stdout.write('\n');
+	}
 }
 
 main();
 
-
-
-// sleep time expects milliseconds
-function sleep (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
-
-// // Usage!
-// sleep(500).then(() => {
-//     // Do something after the sleep!
-// 	console.log(process.argv[0]);
-// 	console.log(process.argv[1]);
-// 	console.log(process.argv[2]);
-// 	console.log(process.argv[3]);
-// });
-//
-
-//
-//
-// function getInput(): any
-// {
-// 	process.stdin.on('data', data => {
-// 		let allData = data.toString();
-// 		g_amountOfCases = Number(allData.split('\n')[0]);
-//
-// 		a = new Array(g_amountOfCases);
-// 		let it = 0;
-// 		while (it < g_amountOfCases)
-// 		{
-// 			allData = allData.substring(allData.indexOf("\n") +1);
-// 			let i_and_j = allData.split('\n')[0];
-// 			let i = Number(i_and_j.split(' ')[0]);
-// 			let j = Number(i_and_j.split(' ')[1]);
-// 			allData = allData.substring(allData.indexOf("\n") +1);
-//
-// 			a[it] = new Array(i);
-// 			for (let x = 0; x < i; x++)
-// 			{
-// 				a[it][x] = new Array(j);
-// 				let line = allData.split('\n')[0];
-// 				for (let y = 0; y < j; y++)
-// 				{
-// 					a[it][x][y] = Number(line[y]);
-// 				}
-// 				allData = allData.substring(allData.indexOf("\n") +1);
-// 			}
-// 			//allData = allData.substring(allData.indexOf("\n") +1);
-// 			it++;
-// 		}
-// 		// console.log(g_amountOfCases);
-// 		console.log(a);
-// 		return a;
-// 		process.exit();
-// 	})
-// }
