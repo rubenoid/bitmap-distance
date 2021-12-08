@@ -1,4 +1,5 @@
 # Bitmap Distance
+(Distance defined as the Manhatten Distance)
 
 #### Install dependencies
 ```
