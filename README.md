@@ -17,7 +17,7 @@ tsc index.ts && tsc forDemonstration.ts
 cat [a puzzle] | node index.js
 ```
 
-#### To run wit spacing for a better view of the solution
+#### To run with spacing for a better view of the solution
 
 ```
 cat [a puzzle] | node index.js -s
