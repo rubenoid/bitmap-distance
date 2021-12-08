@@ -1,29 +1,29 @@
 # Bitmap Distance
 
-####Install dependencies
+#### Install dependencies
 ```
 npm install
 ```
 
-####Compile .ts files to .js
+#### Compile .ts files to .js
 ```
 tsc index.ts && tsc forDemonstration.ts
 ```
 
-####To run
+#### To run
 
 ```
 cat [a puzzle] | node index.js
 ```
 
-####To run wit spacing for a better view of the solution
+#### To run wit spacing for a better view of the solution
 
 ```
 cat [a puzzle] | node index.js spacing
 ```
 
 
-####If you want a better view of how the algorithm works
+#### If you want a better view of how the algorithm works
 After each recursive call of the algorithm the puzzle will be printed. `0`'s are replaced by `.`'s for a better overview. Each time a cell is visited, a variable keeps track of this and the outcome will be printed at the end.
 
 
