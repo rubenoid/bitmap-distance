@@ -19,7 +19,7 @@ cat [a puzzle] | node index.js
 #### To run wit spacing for a better view of the solution
 
 ```
-cat [a puzzle] | node index.js spacing
+cat [a puzzle] | node index.js -s
 ```
 
 
@@ -28,5 +28,5 @@ After each recursive call of the algorithm the puzzle will be printed. `0`'s are
 
 
 ```
-cat [a puzzle] | node forDemonstration.js [spacing]
+cat [a puzzle] | node forDemonstration.js [optional -s]
 ```
