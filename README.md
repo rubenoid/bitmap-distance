@@ -3,24 +3,24 @@
 
 #### Install dependencies
 ```
-npm install
+$ npm install
 ```
 
 #### Compile .ts files to .js
 ```
-tsc index.ts && tsc forDemonstration.ts
+$ tsc index.ts && tsc forDemonstration.ts
 ```
 
 #### To run
 
 ```
-cat [a puzzle] | node index.js
+$ cat [a puzzle] | node index.js
 ```
 
 #### To run with spacing for a better view of the solution
 
 ```
-cat [a puzzle] | node index.js -s
+$ cat [a puzzle] | node index.js -s
 ```
 
 
@@ -29,5 +29,5 @@ After each recursive call of the algorithm the puzzle will be printed. `0`'s are
 
 
 ```
-cat [a puzzle] | node forDemonstration.js [optional -s]
+$ cat [a puzzle] | node forDemonstration.js [optional -s]
 ```
